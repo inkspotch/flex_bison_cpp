@@ -5,7 +5,7 @@ CXXSTD=-std=c++14
 
 CXXFLAGS=-I/usr/local/opt/flex/include $(CXXSTD)
 
-main: parser.tab.o lexer.yy.o calculator_driver.o main.o 
+main: expression.o  parser.tab.o lexer.yy.o calculator_driver.o main.o 
 	$(CXX) $(CXXFLAGS) \
 	-o interpreter $^ -L/usr/local/opt/flex/lib -lfl
 

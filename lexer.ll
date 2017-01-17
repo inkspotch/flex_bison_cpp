@@ -2,12 +2,17 @@
 
   #include "calculator_lexer.hh"
   #undef YY_DECL
-  #define YY_DECL int Calculator::Lexer::yylex( \
+/*  #define YY_DECL Calculator::Parser::symbol_type Calculator::Lexer::yylex( \
       Calculator::Parser::semantic_type* const lval, \
       Calculator::Parser::location_type* loc)
+*/
 
+#define YY_DECL Calculator::Parser::symbol_type Calculator::Lexer::lex()
   using token = Calculator::Parser::token;
 
+  static Calculator::location l;
+
+  #define yyterminate() Calculator::Parser::make_END(l);
 %}
 
 %option c++
@@ -20,9 +25,14 @@ ALPHA [A-Za-z]
 
 %%
 
-{DIGIT}+ { return token::INTEGER; }
+{DIGIT}+ {  
+            int integer = std::atoi(YYText());
+            return Calculator::Parser::make_INTEGER(integer, l);
+         }
 
-{ALPHA}({DIGIT}|{ALPHA})* { return token::IDENTIFIER; }
+{ALPHA}({DIGIT}|{ALPHA})* { return Calculator::Parser::make_IDENTIFIER(YYText(), l); }
 
+"+" { return Calculator::Parser::make_PLUS(l); }
 [ \t\n] { /* ignore whitespace */ }
 
+<<EOF>> { return yyterminate(); }

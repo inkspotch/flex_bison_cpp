@@ -15,9 +15,7 @@ namespace Calculator {
       Lexer(std::istream *in) : yyFlexLexer(in) { };
       virtual ~Lexer() { };
 
-      using FlexLexer::yylex;
-      virtual int yylex(Calculator::Parser::semantic_type* const lval,
-          Calculator::Parser::location_type* location);
+      virtual Calculator::Parser::symbol_type  lex();
   };
 }
 
