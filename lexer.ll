@@ -8,11 +8,12 @@
 */
 
 #define YY_DECL Calculator::Parser::symbol_type Calculator::Lexer::lex()
-  using token = Calculator::Parser::token;
+using token = Calculator::Parser::token;
 
-  static Calculator::location l;
+static Calculator::location l;
 
-  #define yyterminate() Calculator::Parser::make_END(l);
+#undef YY_NULL
+#define YY_NULL Calculator::Parser::make_END(l);
 %}
 
 %option c++
@@ -30,9 +31,18 @@ ALPHA [A-Za-z]
             return Calculator::Parser::make_INTEGER(integer, l);
          }
 
+"def" { return Calculator::Parser::make_DEF(l); }
+
 {ALPHA}({DIGIT}|{ALPHA})* { return Calculator::Parser::make_IDENTIFIER(YYText(), l); }
 
+
+"(" { return Calculator::Parser::make_LPAREN(l); }
+")" { return Calculator::Parser::make_RPAREN(l); }
+"{" { return Calculator::Parser::make_LBRACE(l); }
+"}" { return Calculator::Parser::make_RBRACE(l); }
+
 "+" { return Calculator::Parser::make_PLUS(l); }
+
+
 [ \t\n] { /* ignore whitespace */ }
 
-<<EOF>> { return yyterminate(); }

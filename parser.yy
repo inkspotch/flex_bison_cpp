@@ -31,8 +31,10 @@
 %token <int> INTEGER
 %token <std::string> IDENTIFIER
 
-%token PLUS
-%token END 0
+%token LPAREN RPAREN LBRACE RBRACE
+%token DEF 
+%token PLUS 
+%token END 0 
 
 %type <Expression*> expression
 
@@ -40,13 +42,27 @@
 
 %%
 
-program: /* empty */
-       | program expression { std::cout << $2->value() << std::endl; }
-       | program IDENTIFIER { std::cout << "program id" << std::endl; }
+program: %empty
+       | function_definitions
        ;
 
-expression: INTEGER PLUS INTEGER { $$ = new BinaryOpExpression($1, $3); }
+function_definitions: function_definition
+                    | function_definitions function_definition
+                    ;
 
+function_definition: DEF IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
+                   ;
+
+statements: %empty
+          | statement
+          | statements statement
+          ;
+
+statement: expression { std::cout << $1->value() << std::endl; }
+         ;
+
+expression: INTEGER PLUS INTEGER { $$ = new BinaryOpExpression($1, $3); }
+          ;
 %%
 
 void Calculator::Parser::error(const location_type &l, const std::string &m) {
