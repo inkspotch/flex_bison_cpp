@@ -43,7 +43,8 @@
 %%
 
 program: %empty
-       | function_definitions
+       | program function_definitions
+       | program statements
        ;
 
 function_definitions: function_definition
@@ -54,7 +55,6 @@ function_definition: DEF IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
                    ;
 
 statements: %empty
-          | statement
           | statements statement
           ;
 

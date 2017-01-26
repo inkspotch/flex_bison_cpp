@@ -4,17 +4,19 @@
 class Expression {
   public:
     virtual ~Expression(){}
-    virtual int value() = 0;
+    virtual Expression* eval() = 0;
 };
 
 class BinaryOpExpression : public Expression {
   public:
-    BinaryOpExpression(int l, int r) : left(l), right(r) {}
+    BinaryOpExpression(Operation *o, Expression *l, Expression *r) 
+      : operation(o), left(l), right(r) {}
     virtual ~BinaryOpExpression() {}
-    virtual int value() override;
+    virtual Expression* eval() override;
   private:
-    int left;
-    int right;
+    Operation *operation;
+    Expression *left;
+    Expression *right;
 };
 
 #endif
