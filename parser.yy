@@ -12,8 +12,6 @@
   namespace Calculator {
     class Lexer;
   }
-
-  class Expression;
 }
 
 %parse-param { Lexer &lexer }
@@ -21,7 +19,6 @@
 %code {
   #include <iostream>
   #include "calculator_lexer.hh"
-  #include "expression.hh"
 
   #undef yylex
   #define yylex lexer.lex
@@ -31,12 +28,12 @@
 %token <int> INTEGER
 %token <std::string> IDENTIFIER
 
+%token DEF ASSIGN SEMICOLON
 %token LPAREN RPAREN LBRACE RBRACE
-%token DEF 
-%token PLUS 
+%token PLUS MINUS MULT DIV 
 %token END 0 
 
-%type <Expression*> expression
+/*%type <Expression*> expression*/
 
 %start program
 
@@ -58,11 +55,22 @@ statements: %empty
           | statements statement
           ;
 
-statement: expression { std::cout << $1->value() << std::endl; }
+statement: expression SEMICOLON
          ;
 
-expression: INTEGER PLUS INTEGER { $$ = new BinaryOpExpression($1, $3); }
+expression: term 
+          | term PLUS expression
+          | term MINUS expression
           ;
+
+term: factor
+    | factor MULT term
+    | factor DIV term
+    ;
+
+factor: LPAREN expression RPAREN
+      | INTEGER
+      ;
 %%
 
 void Calculator::Parser::error(const location_type &l, const std::string &m) {

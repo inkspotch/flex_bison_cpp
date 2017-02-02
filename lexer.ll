@@ -33,16 +33,22 @@ ALPHA [A-Za-z]
 
 "def" { return Calculator::Parser::make_DEF(l); }
 
+";"   { return Calculator::Parser::make_SEMICOLON(l); }
+
 {ALPHA}({DIGIT}|{ALPHA})* { return Calculator::Parser::make_IDENTIFIER(YYText(), l); }
 
+"="   { return Calculator::Parser::make_ASSIGN(l); }
 
 "(" { return Calculator::Parser::make_LPAREN(l); }
 ")" { return Calculator::Parser::make_RPAREN(l); }
 "{" { return Calculator::Parser::make_LBRACE(l); }
 "}" { return Calculator::Parser::make_RBRACE(l); }
 
-"+" { return Calculator::Parser::make_PLUS(l); }
 
+"+" { return Calculator::Parser::make_PLUS(l); }
+"-" { return Calculator::Parser::make_MINUS(l); }
+"*" { return Calculator::Parser::make_MULT(l); }
+"/" { return Calculator::Parser::make_DIV(l); }
 
 [ \t\n] { /* ignore whitespace */ }
 
