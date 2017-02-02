@@ -40,13 +40,15 @@
 %%
 
 program: %empty
-       | program function_definitions
-       | program statements
+       | program definitions
        ;
 
-function_definitions: function_definition
-                    | function_definitions function_definition
-                    ;
+definitions: function_definition
+           | variable_definition
+           | statements
+           ;
+
+variable_definition: DEF IDENTIFIER ASSIGN expression SEMICOLON
 
 function_definition: DEF IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
                    ;
@@ -56,6 +58,7 @@ statements: %empty
           ;
 
 statement: expression SEMICOLON
+         | variable_definition
          ;
 
 expression: term 
