@@ -39,36 +39,29 @@
 
 %%
 
-program: %empty
-       | program definitions
-       ;
+program: %empty 
+       | program statement
+       | program function ;
 
-definitions: function_definition
-           | variable_definition
-           | statements
-           ;
+function: DEF IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
+        ;
 
-variable_definition: DEF IDENTIFIER ASSIGN expression SEMICOLON
-
-function_definition: DEF IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
-                   ;
-
-statements: %empty
+statements: %empty 
           | statements statement
           ;
 
 statement: expression SEMICOLON
-         | variable_definition
+         | DEF IDENTIFIER ASSIGN expression SEMICOLON
          ;
 
 expression: term 
-          | term PLUS expression
-          | term MINUS expression
+          | expression PLUS term
+          | expression MINUS term
           ;
 
 term: factor
-    | factor MULT term
-    | factor DIV term
+    | term MULT factor
+    | term DIV factor
     ;
 
 factor: LPAREN expression RPAREN
