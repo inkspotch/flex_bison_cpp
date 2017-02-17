@@ -12,6 +12,7 @@
   namespace Calculator {
     class Lexer;
   }
+  class Expression;
 }
 
 %parse-param { Lexer &lexer }
@@ -19,6 +20,7 @@
 %code {
   #include <iostream>
   #include "calculator_lexer.hh"
+  #include "expression.hh"
 
   #undef yylex
   #define yylex lexer.lex
@@ -34,6 +36,7 @@
 %token END 0 
 
 /*%type <Expression*> expression*/
+%type <Expression*> factor term expression
 
 %start program
 
@@ -41,7 +44,8 @@
 
 program: %empty 
        | program statement
-       | program function ;
+       | program function
+       ;
 
 function: DEF IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
         ;
@@ -50,22 +54,22 @@ statements: %empty
           | statements statement
           ;
 
-statement: expression SEMICOLON
-         | DEF IDENTIFIER ASSIGN expression SEMICOLON
+statement: expression SEMICOLON { std::cout << "expression: " << $1->evaluate(); }
+         | DEF IDENTIFIER ASSIGN expression SEMICOLON { std::cout << "assign: " << $4->evaluate();}
          ;
 
-expression: term 
-          | expression PLUS term
-          | expression MINUS term
+expression: term { $$ = new Number($1->evaluate()); }
+          | expression PLUS term { $$ = new Number($1->evaluate() + $3->evaluate()); }
+          | expression MINUS term { $$ = new Number($1->evaluate() - $3->evaluate()); }
           ;
 
-term: factor
-    | term MULT factor
-    | term DIV factor
+term: factor { $$ = new Number($1->evaluate()); }
+    | term MULT factor { $$ = new Number($1->evaluate() * $3->evaluate()); }
+    | term DIV factor { $$ = new Number($1->evaluate() / $3->evaluate()); }
     ;
 
-factor: LPAREN expression RPAREN
-      | INTEGER
+factor: LPAREN expression RPAREN { $$ = new Number($2->evaluate()); }
+      | INTEGER { $$ = new Number($1); }
       ;
 %%
 
